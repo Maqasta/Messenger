@@ -201,8 +201,11 @@ class RegisterViewController: UIViewController {
         DatabaseManager.shared.userExists(with: email) { [weak self] exists in
             guard let strongSelf = self else {return}
             
-            guard exists else {
+            guard !exists else {
                 strongSelf.alertUserRegisterError(message: "Looks like a user account email addres already exist")
+                DispatchQueue.main.async {
+                    strongSelf.spinner.dismiss()
+                }
                 return
             }
             
@@ -216,9 +219,28 @@ class RegisterViewController: UIViewController {
                     strongSelf.spinner.dismiss()
                 }
                 
-                DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName,
-                                                                    lastName: lastName,
-                                                                    emailAddress: email))
+                let chatUser = ChatAppUser(firstName: firstName,
+                                           lastName: lastName,
+                                           emailAddress: email)
+                
+                DatabaseManager.shared.insertUser(with: chatUser, completion: { success in
+                    guard success,
+                    let image = strongSelf.imageView.image,
+                    let data = image.pngData() else {
+                        return
+                    }
+                    
+                    let fileName = chatUser.profilePictureFileName
+                    StorageManager.shared.uploadProfilePicture(with: data, fileName: fileName) { result in
+                        switch result {
+                        case .success(let downloadURL):
+                            print(downloadURL)
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
+                })
+                
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             }
         }
