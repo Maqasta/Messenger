@@ -37,6 +37,7 @@ class LoginViewController: UIViewController {
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
         field.placeholder = "Email Adress..."
+        field.textColor = .darkText
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
@@ -52,6 +53,7 @@ class LoginViewController: UIViewController {
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
         field.placeholder = "Password..."
+        field.textColor = .darkText
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
@@ -159,6 +161,9 @@ class LoginViewController: UIViewController {
             }
             
             let user = result.user
+            
+            UserDefaults.standard.set(email, forKey: "email")
+            
             print("Logged in user: \(user)")
             strongSelf.navigationController?.dismiss(animated: true, completion: nil)
         }
@@ -236,6 +241,8 @@ extension LoginViewController: LoginButtonDelegate {
                       return
                   }
             
+            UserDefaults.standard.setValue(email, forKey: "email")
+            
             DatabaseManager.shared.userExists(with: email) { exists in
                 if !exists {
                     let chatUser = ChatAppUser(firstName: firstName,
@@ -269,7 +276,7 @@ extension LoginViewController: LoginButtonDelegate {
                             }
                         }.resume()
                     })
-                } 
+                }
             }
             
             let credential = FacebookAuthProvider.credential(withAccessToken: token)

@@ -11,6 +11,7 @@ import JGProgressHUD
 
 class ConversationsViewController: UIViewController {
     
+    //MARK: - UIElements
     private let spinner = JGProgressHUD(style: .dark)
     
     private let tableView: UITableView = {
@@ -44,8 +45,23 @@ class ConversationsViewController: UIViewController {
     
     @objc private func didTapComposeButton() {
         let vc = NewConversationViewController()
+        vc.completion = { [weak self] result in
+            self?.createNewConversation(with: result)
+        }
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true)
+    }
+    
+    func createNewConversation(with result: [String: String]) {
+        guard let name = result["name"],
+              let email = result["email"] else {
+                  return
+              }
+        
+        let vc = ChatViewController(with: email)
+        vc.title = name
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     override func viewDidLayoutSubviews() {
@@ -53,6 +69,7 @@ class ConversationsViewController: UIViewController {
         tableView.frame = view.bounds
     }
     
+    //MARK: - Validate Auth
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         validateAuth()
@@ -67,6 +84,8 @@ class ConversationsViewController: UIViewController {
         }
     }
     
+    //MARK: - TableView Setup
+    
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -77,6 +96,7 @@ class ConversationsViewController: UIViewController {
     }
 }
 
+//MARK: TableView Delegate
 extension ConversationsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
