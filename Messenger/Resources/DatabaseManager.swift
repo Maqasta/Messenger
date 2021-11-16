@@ -120,6 +120,17 @@ extension DatabaseManager {
      */
 }
 
+//MARK: - Sending messages / conversations
+
+extension DatabaseManager {
+    
+}
+
+
+
+
+
+
 struct ChatAppUser {
     let firstName: String
     let lastName: String
