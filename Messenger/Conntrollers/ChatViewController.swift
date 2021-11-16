@@ -7,7 +7,7 @@
 
 import UIKit
 import MessageKit
-import InputBarAccessoryView //finish day
+import InputBarAccessoryView
 
 struct Message: MessageType {
     var sender: SenderType
@@ -25,7 +25,7 @@ struct Sender: SenderType {
 class ChatViewController: MessagesViewController {
 
     private let otherUserEmail: String
-    private var isNewConversation = false
+    public var isNewConversation = false
     
     private var messages = [Message]()
     
@@ -46,17 +46,37 @@ class ChatViewController: MessagesViewController {
         super.viewDidLoad()
         view.backgroundColor = .red
         
-        messages.append(Message(sender: selfSender,
-                                messageId: "1",
-                                sentDate: Date(),
-                                kind: .text("hello world")))
-        
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesDisplayDelegate = self
         messagesCollectionView.messagesLayoutDelegate = self
+        messageInputBar.delegate = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        messageInputBar.inputTextView.becomeFirstResponder()
     }
 }
 
+//MARK: - InputBar Delegate
+extension ChatViewController: InputBarAccessoryViewDelegate {
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+        guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
+            return
+        }
+        
+        //MARK: Send Message
+        if isNewConversation {
+            //сreate in database
+        }
+        else {
+            //append to existing conversation data
+        }
+    }
+}
+
+
+//MARK: - Messages Delegate
 extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
     func currentSender() -> SenderType {
         return selfSender
