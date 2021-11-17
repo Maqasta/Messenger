@@ -123,13 +123,15 @@ extension DatabaseManager {
 //MARK: - Sending messages / conversations
 
 extension DatabaseManager {
+ 
+    public func createNewConversations(with otherUserEmail: String, firstMessage: String, completion: @escaping (Bool) -> (Void)) {
+        
+    }
     
+    public func getAllConversations(for email: String) {
+        
+    }
 }
-
-
-
-
-
 
 struct ChatAppUser {
     let firstName: String
