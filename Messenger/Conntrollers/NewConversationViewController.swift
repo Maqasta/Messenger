@@ -96,6 +96,8 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
         dismiss(animated: true) { [weak self] in
             self?.completion?(targetUserData)
         }
+        
+        
     }
 }
    
@@ -124,12 +126,10 @@ extension NewConversationViewController: UISearchBarDelegate {
                 case .success(let usersCollection):
                     self?.users = usersCollection
                     self?.hasFetched = true
-                    //ask Philip
                     self?.filterUsers(with: query)
                 }
             }
         }
-        //ask Philip
         else {
             filterUsers(with: query)
         }
