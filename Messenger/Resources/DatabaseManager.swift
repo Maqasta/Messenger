@@ -19,6 +19,18 @@ final class DatabaseManager {
     }
 }
 
+extension DatabaseManager {
+    public func getData(path: String, completion: @escaping (Result<Any, Error>) -> Void) {
+        database.child("\(path)").observeSingleEvent(of: .value) { snapshot in
+            guard let value = snapshot.value else {
+                completion(.failure(DatabaseError.failedToFetch))
+                return
+            }
+            completion(.success(value))
+        }
+    }
+}
+
 //MARK: - Account Manager
 extension DatabaseManager {
     
@@ -249,52 +261,55 @@ extension DatabaseManager {
             // Update recipient user conversation entry
             self?.database.child("\(otherUserEmail)/conversations").observeSingleEvent(of: .value) { [weak self] snapshot in
                 if var conversations = userNode["conversations"] as? [[String: Any]] {
-                    //apend
+                    // apend
                     conversations.append(recipientNewConversationData)
                     self?.database.child("\(otherUserEmail)/conversations").setValue(conversations)
                 }
                 else {
-                    //create
+                    // create
                     self?.database.child("\(otherUserEmail)/conversations").setValue([recipientNewConversationData])
                 }
+                updateConversationForCurentUser()
             }
             
-            // Update curent user conversation entry
-            if var conversations = userNode["conversations"] as? [[String: Any]] {
-                // conversetion array exists for current user
-                // you should append
-                conversations.append(newConversationData)
-                userNode["conversations"] = conversations
-                
-                ref.setValue(userNode) { [weak self] error, _ in
-                    guard error == nil else {
-                        completion(false)
-                        return
-                    }
+             func updateConversationForCurentUser() {
+                // Update curent user conversation entry
+                if var conversations = userNode["conversations"] as? [[String: Any]] {
+                    // conversetion array exists for current user
+                    // you should append
+                    conversations.append(newConversationData)
+                    userNode["conversations"] = conversations
                     
-                    self?.finishinCreatingConversation(name: name,
-                                                       conversationId: conversationID,
-                                                       firstMessage: firstMessage,
-                                                       completion: completion)
+                    ref.setValue(userNode) { [weak self] error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        
+                        self?.finishinCreatingConversation(name: name,
+                                                           conversationId: conversationID,
+                                                           firstMessage: firstMessage,
+                                                           completion: completion)
+                    }
                 }
-            }
-            else {
-                // conversetion array does NOT exists
-                // create it
-                userNode["conversations"] = [
-                    newConversationData
-                ]
-                
-                ref.setValue(userNode) { [weak self] error, _ in
-                    guard error == nil else {
-                        completion(false)
-                        return
-                    }
+                else {
+                    // conversetion array does NOT exists
+                    // create it
+                    userNode["conversations"] = [
+                        newConversationData
+                    ]
                     
-                    self?.finishinCreatingConversation(name: name,
-                                                       conversationId: conversationID,
-                                                       firstMessage: firstMessage,
-                                                       completion: completion)
+                    ref.setValue(userNode) { [weak self] error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        
+                        self?.finishinCreatingConversation(name: name,
+                                                           conversationId: conversationID,
+                                                           firstMessage: firstMessage,
+                                                           completion: completion)
+                    }
                 }
             }
         }
