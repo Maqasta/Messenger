@@ -25,6 +25,7 @@
 		B0362B2C2728AE6C000F6A16 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0362B2B2728AE6C000F6A16 /* ChatViewController.swift */; };
 		B0362B2E272C8417000F6A16 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0362B2D272C8417000F6A16 /* StorageManager.swift */; };
 		B03E4B4B271F26DC00FDB7BD /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03E4B4A271F26DC00FDB7BD /* DatabaseManager.swift */; };
+		B0EB15D62753AB9400D3386D /* ConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EB15D52753AB9400D3386D /* ConversationTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		B0362B2B2728AE6C000F6A16 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		B0362B2D272C8417000F6A16 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		B03E4B4A271F26DC00FDB7BD /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		B0EB15D52753AB9400D3386D /* ConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTableViewCell.swift; sourceTree = "<group>"; };
 		FC20A76DFA96F63C8856BCCD /* Pods-Messenger.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Messenger.debug.xcconfig"; path = "Target Support Files/Pods-Messenger/Pods-Messenger.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -150,6 +152,7 @@
 			children = (
 				B001031F2716DC70005FD1B7 /* Storyboards */,
 				B001030F2716D8DC005FD1B7 /* Assets.xcassets */,
+				B0EB15D52753AB9400D3386D /* ConversationTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -306,6 +309,7 @@
 				B00103072716D8DA005FD1B7 /* AppDelegate.swift in Sources */,
 				B001032B2716DFF0005FD1B7 /* ProfileViewController.swift in Sources */,
 				B00103092716D8DA005FD1B7 /* SceneDelegate.swift in Sources */,
+				B0EB15D62753AB9400D3386D /* ConversationTableViewCell.swift in Sources */,
 				B0362B2C2728AE6C000F6A16 /* ChatViewController.swift in Sources */,
 				B00103252716DF6B005FD1B7 /* PhotoViewerViewController.swift in Sources */,
 				B0362B2E272C8417000F6A16 /* StorageManager.swift in Sources */,

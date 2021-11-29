@@ -72,6 +72,8 @@ class ChatViewController: MessagesViewController {
                displayName: "Frolov Danil")
     }
     
+    //private func 
+    
     init(with email: String) {
         self.otherUserEmail = email
         super.init(nibName: nil, bundle: nil)
@@ -112,7 +114,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                                   messageId: messageId,
                                   sentDate: Date(),
                                   kind: .text(text))
-            DatabaseManager.shared.createNewConversations(with: otherUserEmail, firstMessage: message) { success in
+            DatabaseManager.shared.createNewConversations(with: otherUserEmail, name: self.title ?? "User", firstMessage: message) { success in
                 if success {
                     print("message send")
                 }
