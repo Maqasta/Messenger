@@ -167,13 +167,13 @@ class LoginViewController: UIViewController {
                 switch result {
                 case .success(let data):
                     guard let userData = data as? [String: Any],
-                          let firstName = userData["first_name"] as? String,
-                          let lastName = userData["last_name"] as? String else {
+                          let firstName = userData["firstName"] as? String,
+                          let lastName = userData["lastName"] as? String else {
                               return
                           }
                     
                     UserDefaults.standard.set(email, forKey: "email")
-                    UserDefaults.standard.setValue("\(firstName) \(lastName)", forKey: "name")
+                    UserDefaults.standard.set("\(firstName) \(lastName)", forKey: "name")
                 case .failure(let error):
                     print("Failed to read data with error: \(error)")
                 }
@@ -256,8 +256,8 @@ extension LoginViewController: LoginButtonDelegate {
                       return
                   }
             
-            UserDefaults.standard.setValue(email, forKey: "email")
-            UserDefaults.standard.setValue("\(firstName) \(lastName)", forKey: "name")
+            UserDefaults.standard.set(email, forKey: "email")
+            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: "name")
             
             DatabaseManager.shared.userExists(with: email) { exists in
                 if !exists {
