@@ -11,10 +11,10 @@ import InputBarAccessoryView
 import SwiftUI
 
 struct Message: MessageType {
-   public var sender: SenderType
-   public var messageId: String
-   public var sentDate: Date
-   public var kind: MessageKind
+    public var sender: SenderType
+    public var messageId: String
+    public var sentDate: Date
+    public var kind: MessageKind
 }
 
 extension MessageKind {
@@ -51,7 +51,10 @@ struct Sender: SenderType {
 }
 
 class ChatViewController: MessagesViewController {
-
+    
+    private var senderPhotoURL: URL?
+    private var otherUserPhotoURL: URL?
+    
     public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -71,8 +74,8 @@ class ChatViewController: MessagesViewController {
         let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
         
         return Sender(photoURL: "",
-               senderId: safeEmail,
-               displayName: "Frolov Danil")
+                      senderId: safeEmail,
+                      displayName: "Frolov Danil")
     }
     
     init(with email: String, id: String?) {
@@ -103,7 +106,7 @@ class ChatViewController: MessagesViewController {
                     return
                 }
                 self?.messages = messages
-               
+                
                 DispatchQueue.main.async {
                     self?.messagesCollectionView.reloadDataAndKeepOffset()
                     
@@ -132,17 +135,18 @@ class ChatViewController: MessagesViewController {
 extension ChatViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty,
-        let selfSender = self.selfSender,
-        let messageId = createMessageID() else {
-            return
-        }
+              let selfSender = self.selfSender,
+              let messageId = createMessageID() else {
+                  return
+              }
+        
+        let message = Message(sender: selfSender,
+                              messageId: messageId,
+                              sentDate: Date(),
+                              kind: .text(text))
         
         //MARK: Send Message
         if isNewConversation {
-            let message = Message(sender: selfSender,
-                                  messageId: messageId,
-                                  sentDate: Date(),
-                                  kind: .text(text))
             DatabaseManager.shared.createNewConversations(with: otherUserEmail, name: self.title ?? "User", firstMessage: message) { [weak self] success in
                 if success {
                     print("message send")
@@ -155,7 +159,19 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             }
         }
         else {
+            guard let conversationId = conversationId,
+                  let name = self.title else {
+                      return
+                  }
             //append to existing conversation data
+            DatabaseManager.shared.sendMessage(to: conversationId, name: name, with: otherUserEmail, newMessage: message) { success in
+                if success {
+                    print("message send")
+                }
+                else {
+                    print("failed to send")
+                }
+            }
         }
         
         func createMessageID() -> String? {
@@ -190,5 +206,71 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
         return messages.count
+    }
+    
+    func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+        let sender = message.sender
+        if sender.senderId == selfSender?.senderId {
+            return .link
+        }
+        
+        return .secondarySystemBackground
+    }
+    
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        let sender = message.sender
+        
+        if sender.senderId == selfSender?.senderId {
+            if let curentUserImageURL = self.senderPhotoURL {
+                avatarView.sd_setImage(with: curentUserImageURL, completed: nil)
+            }
+            else {
+                guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+                    return
+                }
+                
+                let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
+                let path = "images/\(safeEmail)_profile_picture.png"
+                
+                
+                StorageManager.shared.downloadURL(for: "\(path)") { [weak self] result in
+                    switch result {
+                    case .success(let urlString):
+                        let fileUrl = URL(string: urlString)
+                        self?.senderPhotoURL = fileUrl
+                        
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: fileUrl, completed: nil)
+                        }
+                        
+                    case .failure(let error):
+                        print("\(error)")
+                    }
+                }
+            }
+        }
+        else {
+            if let otherUserImageURL = self.otherUserPhotoURL {
+                avatarView.sd_setImage(with: otherUserImageURL, completed: nil)
+            } else {
+                let safeEmail = DatabaseManager.safeEmail(emailAddress: otherUserEmail)
+                let path = "images/\(safeEmail)_profile_picture.png"
+                
+                
+                StorageManager.shared.downloadURL(for: "\(path)") { [weak self] result in
+                    switch result {
+                    case .success(let urlString):
+                        let fileUrl = URL(string: urlString)
+                        self?.otherUserPhotoURL = fileUrl
+                        
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: fileUrl, completed: nil)
+                        }
+                    case .failure(let error):
+                        print("\(error)")
+                    }
+                }
+            }
+        }
     }
 }
